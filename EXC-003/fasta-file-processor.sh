@@ -1,10 +1,8 @@
-		# print header
-echo -e "FASTA File Statistics:\n----------------------"
-		# store file in variable
-fasta=$1
+### prep
 
-		# split by sequences -> count them individually ->
-		# save to variable as list -> count/sum/longest/shortest/avr etc.
+echo -e "FASTA File Statistics:\n----------------------"
+
+fasta=$1
 
 while read i; do
   if [[ $i != ">"* ]]; then
@@ -28,6 +26,9 @@ all_sequences=0
 for j in $seqcount; do
 	all_sequences=$all_sequences+$j
 done
+
+all_sequences="$(echo $((all_sequences)))"
+
 echo "Total length of sequences: $((all_sequences))"
 
 ### Task3 & 4
@@ -42,23 +43,7 @@ echo "Average sequence length: $(($((all_sequences))/$num_seq))"
 
 ### Task6
 
-#GC Content (%): ______
-
-
-
-
-##### --- first approach
-
-### Task 1
-		# assess number of sequences:
-#num_sequences=$(grep '>' $fasta | wc -l)
-#echo "Number of sequences: $num_sequences"
-
-### Task 2
-		# check total length of sequences -
-		# first solution involved "wc -c" but that was inferior
-		# alternative: grep -v '>' -> count [ATGC] (source: Old stackoverflow post)
-		# does take a while for large files
-#just_sequences=$(grep -v '>' $fasta)
-#just_sequences="${just_sequences//[^ATGC]}"
-#echo "Total length of sequences: ${#just_sequences}"
+just_sequences=$(grep -v '>' $fasta)
+GC_abs="$(echo $just_sequences | awk '{gc_count += gsub(/[GgCc]/, "")} END {print gc_count}')"
+GC_rel="$(echo "scale=3; $GC_abs/$all_sequences*100" | bc)"
+echo "GC Content (%): $GC_rel"
