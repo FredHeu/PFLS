@@ -17,7 +17,7 @@ seqcount="$(echo $seqcount | tr "b" '\n' | sed 's/$/0/g' | bc)"
 
 ### Task1
 
-num_seq=$(wc -l <<< $seqcount)
+num_seq=$(wc -l <<< $seqcount | awk '{print $1}')
 echo "Number of sequences: $num_seq"
 
 ### Task2
