@@ -2,7 +2,7 @@
 import os, shutil, re
 
 path = "./EXC-004/RAW-DATA"
-destination = "./EXC-004/COMBINED-DATA"
+destination = "./EXC-004/COMBINED-DATA/"
 # create directory or remove contents
 try:
    os.mkdir('./EXC-004/COMBINED-DATA')
@@ -29,9 +29,11 @@ for directory in dir_list:
             sample_translation = line.split()
             xxx = sample_translation[1]
 
-# copy unbinned to combined dir:
-   shutil.copy(DNA_path + '/bin-unbinned.fasta', destination + '/' + xxx + '_UNBINNED.fa')
-
+# copy unbinned/checkm/gtdb files to combined dir:
+   shutil.copy(DNA_path + '/bin-unbinned.fasta', destination + xxx + '_UNBINNED.fa')
+   sup_file_path = path + '/' + directory + '/'
+   shutil.copy(sup_file_path + 'checkm.txt', destination + xxx + '-CHECKM.txt')
+   shutil.copy(sup_file_path + 'gtdb.gtdbtk.tax', destination + xxx + '-GTDB-TAX.txt')
 
 # assess yyy - therefore: extract bin# from file name -> search from checkm.txt
 # while at it, iterate seperatly for zzz, copy and rename files into output folder
@@ -50,14 +52,26 @@ for directory in dir_list:
                      yyy = "MAG"
                      zzzMAG = str(zMAG).zfill(3)
                      zMAG += 1
-                     shutil.copy(DNA_path + '/' + file, destination + '/' + xxx + '_' + yyy + '_' + zzzMAG + '.fa')
+                     shutil.copy(DNA_path + '/' + file, destination + xxx + '_' + yyy + '_' + zzzMAG + '.fa')
                   else:
                      yyy = "BIN"
                      zzzBIN = str(zBIN).zfill(3)
                      zBIN += 1
-                     shutil.copy(DNA_path + '/' + file, destination + '/' + xxx + '_' + yyy + '_' + zzzBIN + '.fa')
+                     shutil.copy(DNA_path + '/' + file, destination + xxx + '_' + yyy + '_' + zzzBIN + '.fa')
 
-
-# Tasks remaining:
-#  Manipulate Defline with xxx
-#  copy and rename checkm.txt and gtdb file
+# add ID to defline in copied fasta
+filelist = [f for f in os.listdir('./EXC-004/COMBINED-DATA')]
+for file in filelist:
+   if file.endswith('.fa'):
+      xxx = file.split('_')
+      xxx = xxx[0]
+      with open('EXC-004/COMBINED-DATA/' + file) as input_file:
+         with open('EXC-004/COMBINED-DATA/' + file + '.new', 'w') as output_file:
+            for line in input_file:
+               if '>' in line:
+                  new_line = line.lstrip('>')
+                  new_line = ">" + xxx + ";" + new_line
+                  output_file.write(new_line)
+               else:
+                  output_file.write(line)
+      os.rename('EXC-004/COMBINED-DATA/' + file + '.new', 'EXC-004/COMBINED-DATA/' + file)
