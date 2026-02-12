@@ -1,15 +1,15 @@
 # setup
 import os, shutil, re
 
-path = "./EXC-004/RAW-DATA"
-destination = "./EXC-004/COMBINED-DATA/"
+path = "./RAW-DATA"
+destination = "./COMBINED-DATA/"
 # create directory or remove contents
 try:
-   os.mkdir('./EXC-004/COMBINED-DATA')
+   os.mkdir('./COMBINED-DATA')
 except FileExistsError:
-   filelist = [f for f in os.listdir('./EXC-004/COMBINED-DATA')]
+   filelist = [f for f in os.listdir('./COMBINED-DATA')]
    for f in filelist:
-      os.remove(os.path.join('./EXC-004/COMBINED-DATA', f))
+      os.remove(os.path.join('./COMBINED-DATA', f))
 
 # creates list with names of Directorys: [DNA57, DNA64, ...] 
 dir_list = []
@@ -23,7 +23,7 @@ for directory in dir_list:
    DNA_path = path + "/" + directory + "/bins"
    zMAG = 1
    zBIN = 1   
-   with open('./EXC-004/RAW-DATA/sample-translation.txt', 'r') as f:
+   with open('./RAW-DATA/sample-translation.txt', 'r') as f:
       for line in f.readlines():
          if directory in line:
             sample_translation = line.split()
@@ -38,11 +38,11 @@ for directory in dir_list:
 # assess yyy - therefore: extract bin# from file name -> search from checkm.txt
 # while at it, iterate seperatly for zzz, copy and rename files into output folder
 
-   filelist = [f for f in os.listdir('./EXC-004/RAW-DATA/' + directory + '/bins')]
+   filelist = [f for f in os.listdir('./RAW-DATA/' + directory + '/bins')]
    for file in filelist:
       if not file.startswith('.') and not file == "bin-unbinned.fasta":
          yyybin = file.rstrip('.fasta')
-         with open('./EXC-004/RAW-DATA/' + directory + '/checkm.txt', 'r') as f:
+         with open('./RAW-DATA/' + directory + '/checkm.txt', 'r') as f:
             for line in f.readlines():
                if yyybin in line:
                   checkm = line.split()
@@ -60,13 +60,13 @@ for directory in dir_list:
                      shutil.copy(DNA_path + '/' + file, destination + xxx + '_' + yyy + '_' + zzzBIN + '.fa')
 
 # add ID to defline in copied fasta
-filelist = [f for f in os.listdir('./EXC-004/COMBINED-DATA')]
+filelist = [f for f in os.listdir('./COMBINED-DATA')]
 for file in filelist:
    if file.endswith('.fa'):
       xxx = file.split('_')
       xxx = xxx[0]
-      with open('EXC-004/COMBINED-DATA/' + file) as input_file:
-         with open('EXC-004/COMBINED-DATA/' + file + '.new', 'w') as output_file:
+      with open('COMBINED-DATA/' + file) as input_file:
+         with open('COMBINED-DATA/' + file + '.new', 'w') as output_file:
             for line in input_file:
                if '>' in line:
                   new_line = line.lstrip('>')
@@ -74,4 +74,4 @@ for file in filelist:
                   output_file.write(new_line)
                else:
                   output_file.write(line)
-      os.rename('EXC-004/COMBINED-DATA/' + file + '.new', 'EXC-004/COMBINED-DATA/' + file)
+      os.rename('COMBINED-DATA/' + file + '.new', 'COMBINED-DATA/' + file)
